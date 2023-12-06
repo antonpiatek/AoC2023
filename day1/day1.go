@@ -62,6 +62,9 @@ func ProcessData(data []string) int {
 }
 
 func ProcessLine(line string) int {
+	// Can't do lookaheads in go apparently
+	// Could almost do with one regex, but doesn't work for only one value in a string
+	// - `.*?(\d|one|two|three|four|five|six|seven|eight|nine).*(\d|one|two|three|four|five|six|seven|eight|nine)`
 	r1, _ := regexp.Compile(`(\d|one|two|three|four|five|six|seven|eight|nine)`)
 	r2, _ := regexp.Compile(`.*(\d|one|two|three|four|five|six|seven|eight|nine)`)
 	x1 := r1.FindAllStringSubmatch(line, -1)
