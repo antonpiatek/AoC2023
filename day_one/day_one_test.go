@@ -38,3 +38,32 @@ func TestData(t *testing.T) {
 		})
 	}
 }
+
+func TestWordyData(t *testing.T) {
+	tests := []struct {
+		input string
+		want  int
+	}{
+		{input: "two1nine", want: 29},
+		{input: "eightwothree", want: 83},
+		{input: "abcone2threexyz", want: 13},
+		{input: "xtwone3four", want: 24},
+		{input: "4nineeightseven2", want: 42},
+		{input: "zoneight234", want: 14},
+		{input: "7pqrstsixteen", want: 76},
+		{input: "2onenine", want: 29},
+		{input: "2oneight", want: 28},
+	}
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			actual := ProcessLine(test.input)
+
+			if actual != test.want {
+				t.Errorf("sums don't match: expected %v, got %v", test.want, actual)
+			}
+		})
+	}
+}
+
+// 281

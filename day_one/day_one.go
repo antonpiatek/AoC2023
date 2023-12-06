@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -60,20 +61,45 @@ func ProcessData(data []string) int {
 	return total
 }
 
-func ProcessLine(name string) int {
-	split := strings.Split(name, "")
-
-	first := ""
-	last := ""
-	for _, element := range split {
-		if _, err := strconv.Atoi(element); err == nil {
-			if first == "" {
-				first = element
-			}
-			last = element
-		}
-	}
+func ProcessLine(line string) int {
+	r1, _ := regexp.Compile(`(\d|one|two|three|four|five|six|seven|eight|nine)`)
+	r2, _ := regexp.Compile(`.*(\d|one|two|three|four|five|six|seven|eight|nine)`)
+	x1 := r1.FindAllStringSubmatch(line, -1)
+	x2 := r2.FindAllStringSubmatch(line, -1)
+	first := toNum(x1[0][1])
+	last := toNum(x2[len(x2)-1][1])
+	// fmt.Print(x)
 
 	result, _ := strconv.Atoi(first + last)
 	return result
+}
+
+func toNum(s string) string {
+	_, err := strconv.Atoi(s)
+	if err == nil {
+		return s
+	}
+
+	switch s {
+	case "one":
+		return "1"
+	case "two":
+		return "2"
+	case "three":
+		return "3"
+	case "four":
+		return "4"
+	case "five":
+		return "5"
+	case "six":
+		return "6"
+	case "seven":
+		return "7"
+	case "eight":
+		return "8"
+	case "nine":
+		return "9"
+	default:
+		panic("unimplemented")
+	}
 }
