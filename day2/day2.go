@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
@@ -16,7 +18,17 @@ func main() {
 }
 
 func run() error {
-	panic("not implemented")
+	lines, err := ReadData()
+	if err != nil {
+		return err
+	}
+
+	res := ProcessLines(lines)
+	fmt.Println("part a:", res)
+
+	res2 := TotalPower(lines)
+	fmt.Println("part b:", res2)
+	return nil
 }
 
 type GameResult struct {
@@ -30,6 +42,8 @@ type GameData struct {
 	green int
 }
 
+type MinData = GameData
+
 func ProcessLines(lines []string) int {
 	total := 0
 	for _, line := range lines {
@@ -39,6 +53,38 @@ func ProcessLines(lines []string) int {
 		}
 	}
 	return total
+}
+
+func TotalPower(lines []string) int {
+	total := 0
+	for _, line := range lines {
+		gameData := ParseLine(line)
+		pow := GamePower(gameData)
+		total += pow
+	}
+	return total
+}
+
+func GamePower(data GameResult) int {
+	min := GameMin(data)
+	return min.blue * min.green * min.red
+}
+
+func GameMin(data GameResult) MinData {
+	res := MinData{}
+	for _, i := range data.data {
+		if i.red > res.red {
+			res.red = i.red
+		}
+		if i.green > res.green {
+			res.green = i.green
+		}
+		if i.blue > res.blue {
+			res.blue = i.blue
+		}
+	}
+
+	return res
 }
 
 // The Elf would first like to know which games would have been possible if the bag contained
@@ -57,7 +103,7 @@ func GameValid(gameresult GameResult) bool {
 }
 
 var r1 = regexp.MustCompile(`Game (\d+):\s*(.+)`)
-var r2 = regexp.MustCompile(`(\d+)\s*(.+)`)
+var r2 = regexp.MustCompile(`(\d+)\s*(\w+)`)
 
 func ParseLine(line string) GameResult {
 
@@ -95,4 +141,34 @@ func extractGameData(game string) GameData {
 	}
 
 	return result
+}
+
+func ReadData() ([]string, error) {
+	f, err := os.Open("./data.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	var lines []string
+	r := bufio.NewReader(f)
+	for {
+		line, err := r.ReadString('\n')
+		if len(line) == 0 && err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+		line = strings.TrimSuffix(line, "\n")
+		lines = append(lines, line)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+	}
+	f.Close()
+
+	return lines, nil
 }

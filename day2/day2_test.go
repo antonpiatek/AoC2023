@@ -12,6 +12,17 @@
 // similarly, game 4 would also have been impossible because the Elf showed you 15 blue cubes at once.
 // If you add up the IDs of the games that would have been possible, you get 8.
 
+//what is the fewest number of cubes of each color that could have been in the bag to make the game possible?
+//
+//In game 1, the game could have been played with as few as 4 red, 2 green, and 6 blue cubes. If any color had even one fewer cube, the game would have been impossible.
+// Game 2 could have been played with a minimum of 1 red, 3 green, and 4 blue cubes.
+// Game 3 must have been played with at least 20 red, 13 green, and 6 blue cubes.
+// Game 4 required at least 14 red, 3 green, and 15 blue cubes.
+// Game 5 needed no fewer than 6 red, 3 green, and 2 blue cubes in the bag.
+// The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together.
+// The power of the minimum set of cubes in game 1 is 48. In games 2-5 it was 12, 1560, 630, and 36, respectively. Adding up these five powers produces the sum 2286.
+
+// For each game, find the minimum set of cubes that must have been present. What is the sum of the power of these sets?
 package main
 
 import (
@@ -31,6 +42,102 @@ func TestProcessLines(t *testing.T) {
 	res := ProcessLines(gameData)
 	if res != want {
 		t.Errorf("result doesn't match: expected %v, got %v", want, res)
+	}
+}
+
+// The power of the minimum set of cubes in game 1 is 48.
+// In games 2-5 it was 12, 1560, 630, and 36, respectively. Adding up these five powers produces the sum 2286.
+
+func TestTotalPower(t *testing.T) {
+	gameData := []string{
+		"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+		"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
+		"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red",
+		"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red",
+		"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
+	}
+	want := 2286
+	res := TotalPower(gameData)
+	if res != want {
+		t.Errorf("result doesn't match: expected %v, got %v", want, res)
+	}
+}
+
+func TestGamePower(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{
+			input: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+			want:  48,
+		},
+		{
+			input: "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
+			want:  12,
+		},
+		{
+			input: "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red",
+			want:  1560,
+		},
+		{
+			input: "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red",
+			want:  630,
+		},
+		{
+			input: "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
+			want:  36,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			data := ParseLine(test.input)
+			actual := GamePower(data)
+			if !reflect.DeepEqual(actual, test.want) {
+				t.Errorf("GameMin doesn't match: expected %v, got %v", test.want, actual)
+			}
+		})
+	}
+}
+
+func TestGameMin(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  MinData
+	}{
+		{
+			input: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+			want:  MinData{red: 4, green: 2, blue: 6},
+		},
+		{
+			input: "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
+			want:  MinData{red: 1, green: 3, blue: 4},
+		},
+		{
+			input: "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red",
+			want:  MinData{red: 20, green: 13, blue: 6},
+		},
+		{
+			input: "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red",
+			want:  MinData{red: 14, green: 3, blue: 15},
+		},
+		{
+			input: "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
+			want:  MinData{red: 6, green: 3, blue: 2},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			data := ParseLine(test.input)
+			actual := GameMin(data)
+			if !reflect.DeepEqual(actual, test.want) {
+				t.Errorf("GameMin doesn't match: expected %v, got %v", test.want, actual)
+			}
+		})
 	}
 }
 
