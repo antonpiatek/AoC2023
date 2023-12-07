@@ -61,12 +61,13 @@ func ProcessData(data []string) int {
 	return total
 }
 
+// Can't do lookaheads in go apparently
+// Could almost do with one regex, but doesn't work for only one value in a string
+// - `.*?(\d|one|two|three|four|five|six|seven|eight|nine).*(\d|one|two|three|four|five|six|seven|eight|nine)`
+var r1 = regexp.MustCompile(`(\d|one|two|three|four|five|six|seven|eight|nine)`)
+var r2 = regexp.MustCompile(`.*(\d|one|two|three|four|five|six|seven|eight|nine)`)
+
 func ProcessLine(line string) int {
-	// Can't do lookaheads in go apparently
-	// Could almost do with one regex, but doesn't work for only one value in a string
-	// - `.*?(\d|one|two|three|four|five|six|seven|eight|nine).*(\d|one|two|three|four|five|six|seven|eight|nine)`
-	r1, _ := regexp.Compile(`(\d|one|two|three|four|five|six|seven|eight|nine)`)
-	r2, _ := regexp.Compile(`.*(\d|one|two|three|four|five|six|seven|eight|nine)`)
 	x1 := r1.FindAllStringSubmatch(line, -1)
 	x2 := r2.FindAllStringSubmatch(line, -1)
 	first := toNum(x1[0][1])
